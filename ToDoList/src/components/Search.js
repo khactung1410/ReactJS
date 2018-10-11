@@ -4,33 +4,40 @@ class Search extends Component {
     constructor(props){
         super(props);
         this.state = {
-            keyword : ''
+            key : ""
         }
     }
-    onChange = (event)=>{
+    onChange = (event) =>{
         var name = event.target.name;
         var value = event.target.value;
         this.setState({
-            [name]:value
-        })
+            [name] : value
+        });
     }
-    onSearch =()=>{
-        this.props.onSearch(this.state.keyword)
+    onSearch = ()=>{
+        this.props.onSearch(this.state.key);
+    }
+    handleKeyDown =(event)=>{
+        console.log(event.key);
+        if(event.key === "Enter"){
+            event.preventDefault();
+            this.onSearch();
+        }
     }
     render() {
-        var {keyword}= this.state;
         return (
             <div>
                 {/*Search*/}
                 <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                     <div className="input-group">
                         <input
+                            name="key"
+                            value={this.state.key}
+                            onChange={ this.onChange}
                             type="text"
                             className="form-control"
                             placeholder="Nhập từ khóa..."
-                            name="keyword"
-                            value={keyword}
-                            onChange={this.onChange}
+                            onKeyDown={this.handleKeyDown}
                         />
                         <span className="input-group-btn">
                             <button

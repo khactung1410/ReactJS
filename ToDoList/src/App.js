@@ -3,6 +3,7 @@ import './App.css';
 import Taskform from './components/Taskform';
 import Control from "./components/Control";
 import TaskList from "./components/TaskList";
+import _ from "lodash";
 
 class App extends Component {
     constructor(props){
@@ -15,7 +16,9 @@ class App extends Component {
                 name :'',
                 status : -1
             },
-            keyword : ''
+            sortBy : "name",
+            sortValue : 1,
+            key :""
         }
     }
 
@@ -112,7 +115,10 @@ class App extends Component {
     }
     onEditItem =(id) =>{
         var {tasks} = this.state;
-        var index = this.findIndex(id);
+        // var index = this.findIndex(id);
+        var index = _.findIndex(tasks,task =>{
+            return task.id === id;
+        })
         var taskEditting = tasks[index];
         this.setState({
             taskEditting : taskEditting
@@ -128,17 +134,23 @@ class App extends Component {
             }
         })
     }
-    onSearch=(keyword)=>{
+    onSort = (name,value)=>{
         this.setState({
-            keyword : keyword
+            sortBy : name,
+            sortValue : value
+        })
+    }
+    onSearch = (key) =>{
+        this.setState({
+            key : key.toLowerCase()
         })
     }
     render() {
-        var {tasks , isDisplayForm ,taskEditting,filter,keyword} = this.state;// var tasks = this.state.tasks
+        var {tasks , isDisplayForm ,taskEditting,filter,sortBy,sortValue,key} = this.state;// var tasks = this.state.tasks
         if(filter){
             if(filter.name){
                 tasks = tasks.filter((task) =>{
-                    return task.name.toLowerCase().indexOf(filter.name) !== -1;
+                    return task.name.toLocaleLowerCase().indexOf(filter.name) !== -1;
                 })
             }
             tasks = tasks.filter((task)=>{
@@ -150,9 +162,26 @@ class App extends Component {
                 }
             })
         }
-        if(keyword){
-            tasks = tasks.filter((task) =>{
-                return task.name.toLowerCase().indexOf(keyword) !== -1;
+        if(sortBy === "name"){
+            tasks = tasks.sort((a,b)=>{
+                if(a.name > b.name) return sortValue;
+                else if(a.name < b.name) return -sortValue;
+                else return 0;
+            })
+        }
+        if(sortBy === "status"){
+            tasks = tasks.sort((a,b)=>{
+                if(a.status > b.status) return sortValue;
+                else if(a.status < b.status) return -sortValue;
+                else return 0;
+            })
+        }
+        if(key !== ""){
+            // tasks = tasks.filter(task =>{
+            //     return task.name.toLowerCase().indexOf(key) !== -1;
+            // })
+            tasks = _.filter(tasks,task =>{
+                return task.name.toLowerCase().indexOf(key) !== -1;
             })
         }
         var eleTaskForm = isDisplayForm
@@ -181,7 +210,10 @@ class App extends Component {
                         </button>
                         {/*Search - Sort*/}
                         <div className="row mt-15">
-                            <Control onSearch={this.onSearch}/>
+                            <Control
+                                onSearch={this.onSearch}
+                                onSort={this.onSort}
+                            />
                         </div>
                         {/*List*/}
                         <div className="row mt-15">
@@ -203,4 +235,3 @@ class App extends Component {
 }
 
 export default App;
-// Duong Khac Tung 2222
